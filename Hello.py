@@ -166,6 +166,10 @@ def uninstall_app(appName):
 
 
 def install_rabbitmq():
+    """
+    安装rabbitmq
+    :return:
+    """
     execute(install_erlang)
     put(local_path="../rabbitmq/rabbitmq-server-generic-unix-3.6.2.tar.xz", remote_path="/tmp")
     with cd("/tmp"):
@@ -180,6 +184,10 @@ def install_rabbitmq():
 
 
 def install_erlang():
+    """
+    安装erlang
+    :return:
+    """
     put(local_path="../rabbitmq/otp_src_19.2.tar.gz", remote_path="/tmp")
     run("yum install gcc gcc-c++ ncurses-devel perl openssl -y")
     with cd("/tmp"):
@@ -210,6 +218,12 @@ def install_jdk(version="jdk1.8.0_181.tar.gz"):
 
 
 def install_nginx(pcre_version="pcre-8.33.tar.gz", nginx_version="nginx-1.17.0.tar.gz"):
+    """
+    安装nginx
+    :param pcre_version:
+    :param nginx_version:
+    :return:
+    """
     run("yum install -y gcc gcc-c++ zlib-devel openssl-devel")
     put(local_path="../nginx/" + pcre_version + "", remote_path="/tmp")
     put(local_path="../nginx/" + nginx_version + "", remote_path="/tmp")
@@ -227,6 +241,11 @@ def install_nginx(pcre_version="pcre-8.33.tar.gz", nginx_version="nginx-1.17.0.t
 
 
 def install_oracle(version = ["linux.x64_11gR2_database_1of2.zip", "linux.x64_11gR2_database_2of2.zip"]):
+    """
+    安装oracle
+    :param version:
+    :return:
+    """
     run("mkdir -p /home/tmp")
     for ver in version:
         put(local_path="../oracle/" + ver + "", remote_path="/home/tmp")
@@ -255,6 +274,10 @@ def install_oracle(version = ["linux.x64_11gR2_database_1of2.zip", "linux.x64_11
 
 
 def before_install_oracle():
+    """
+    安装oracle之前的环境变量配置
+    :return:
+    """
     conf_dirt = Getcnf.read_cnf("../oracle/conf.txt")
     run("yum install binutils compat-libstdc++ elfutils-libelf elfutils-libelf-devel "
         "elfutils-libelf-devel-static gcc gcc-c++ glibc glibc-common glibc-devel "
@@ -283,6 +306,10 @@ def before_install_oracle():
 
 
 def after_install_oracle():
+    """
+    初始化数据库，oracle systemctl启用
+    :return:
+    """
     run("su - oracle -c \"netca /silent /responsefile /data/etc/netca.rsp\"")
     run("su - oracle -c \"dbca -silent -responseFile /data/etc/dbca.rsp\"")
     run("su - oracle -c \"lsnrctl status\"")
