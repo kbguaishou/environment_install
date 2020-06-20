@@ -5,18 +5,18 @@ from fabric.api import *
 
 import Getcnf
 
-# env.hosts = ['192.168.254.201']
-# env.port = 22
-# env.user = 'root'
-# env.password = '123456'
+env.hosts = ['192.168.254.201']
+env.port = 22
+env.user = 'root'
+env.password = '123456'
 
 
 # env.hosts = ['192.168.10.33']
-env.hosts = ['192.168.10.66']
-env.port = 22
-env.user = 'root'
+# env.hosts = ['129.28.162.13']
+# env.port = 22
+# env.user = 'root'
 # env.password = '123456'
-env.password = '123456'
+# env.password = '@Fjmxkj1220@'
 
 # env.hosts = ['192.168.254.200']
 # env.port = 22
@@ -34,10 +34,8 @@ def close_process(pName):
     :param pName: 进程名
     :return:
     """
-    res = run("ps -ef | grep " + pName)
-    pid = res[11:16]
-    # print(pid)
-    run('kill -9 ' + pid.strip())
+    res = run("ps -ef | grep " + pName + " | grep -v grep | awk '{print $2}'")
+    run('kill -9 ' + res)
 
 
 def install_redis(version="redis-5.0.8.tar.gz"):
@@ -119,7 +117,6 @@ def install_mysql(version = "mysql-5.7.29-el7-x86_64.tar.gz"):
         with cd("/tmp"):
             dir_name = _unzip_("/tmp/" + version + "")
             run("mv " + dir_name + " /usr/local/mysql/")
-            # todo 逻辑错误大改
         run("mkdir -p /usr/local/mysql/data")
         run("chown -R mysql:mysql /usr/local/mysql")
         run("mkdir -p /var/lib/mysql/")
@@ -373,14 +370,45 @@ def test():
     put(local_path="../oracle/dbca.rsp", remote_path="/data/etc")
 
 
+def main():
+    switch = {
+        '1': set_cd_repo,
+        '2': install_jdk,
+        '3': install_nginx,
+        '4': install_rabbitmq,
+        '5': install_redis,
+        '6': install_mysql,
+        '7': install_oracle
+    }
+    choice = input("请输入你要安装的程序\n"
+                   "1.设置光盘为yum源头\n"
+                   "2.安装jdk\n"
+                   "3.安装nginx\n"
+                   "4.安装rabbitmq\n"
+                   "5.安装redis\n"
+                   "6.安装mysql\n"
+                   "7.安装oracle\n")
+    print(type(choice))
+    switch.get(choice)()
+
+
 if __name__ == '__main__':
     # files = ls_dir_local("../redis")
-    execute(set_cd_repo)
+    # abc = execute(ls)
+    # print("hello world")
     # print("安装redis：")
     # for index, file in enumerate(files):
     #     print(str(index)+'.'+file)
     # files_index = int(input("请输入要安装的版本："))
     # version = files[files_index]
     # execute(install_redis, version)
+    # execute(set_cd_repo)
+    # sys.exit(1)
+    main()
+    branch = input("按enter回到主菜单，按q退出此程序")
+    switch = {
+        '': main,
+        'e': '退出'
+    }
 
 

@@ -1,0 +1,10 @@
+[Unit] 
+Description=oracle auto start regist service
+After=network.target remote-fs.target nss-lookup.target
+  
+[Service]
+Type=forking
+ExecStart=/etc/init/oracle start
+ExecReload=/etc/init/oracle restart
+[Install]
+WantedBy=multi-user.target

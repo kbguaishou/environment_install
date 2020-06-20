@@ -1,0 +1,42 @@
+#! /bin/bash
+ORA_HOME=/home/oracleapp/app/oracle/product/11.2.0/
+ORA_OWNER=oracle  
+LOGFILE=/var/log/oracle.log  
+echo "#################################" >> ${LOGFILE}  
+date +"### %T %a %D: Run Oracle" >> ${LOGFILE}  
+if [ ! -f ${ORA_HOME}/bin/dbstart ] || [ ! -f ${ORA_HOME}/bin/dbshut ]; then  
+    echo "Error: Missing the script file ${ORA_HOME}/bin/dbstart or ${ORA_HOME}/bin/dbshut!" >> ${LOGFILE}  
+    echo "#################################" >> ${LOGFILE}  
+    exit  
+fi  
+start(){   
+    echo "###listener start..."  
+    su - ${ORA_OWNER} -c "${ORA_HOME}/bin/lsnrctl start"  
+    echo "###Done."  
+    echo "###Startup Database..."  
+    su - ${ORA_OWNER} -c "${ORA_HOME}/bin/dbstart ${ORA_HOME}"  
+    echo "###Done."  
+}  
+stop(){  
+    echo "###listener stop..."  
+    su - ${ORA_OWNER} -c "${ORA_HOME}/bin/lsnrctl stop"  
+    echo "###Done."  
+    echo "###Shutdown Database..."  
+    su - ${ORA_OWNER} -c "${ORA_HOME}/bin/dbshut ${ORA_HOME}"  
+    echo "###Done."  
+}  
+case "$1" in  
+    'start')  
+        start >> ${LOGFILE}  
+    ;;  
+    'stop')  
+        stop >> ${LOGFILE}  
+    ;;  
+    'restart')  
+        stop >> ${LOGFILE}  
+        start >> ${LOGFILE}  
+    ;;  
+esac  
+date +"### %T %a %D: Finished." >> ${LOGFILE}  
+echo "#################################" >> ${LOGFILE}  
+echo ""  
